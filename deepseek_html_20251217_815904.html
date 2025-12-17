@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RevoPredict | Predictive Maintenance for 3D Printing</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 0 16px;
+            margin: 0 auto;
+        }
+
+        /* Header & Hero */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .auth-btn {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .hero {
+            padding: 48px 16px;
+            text-align: center;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: var(--gray-900);
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--gray-700);
+            margin-bottom: 24px;
+        }
+
+        .cta-button {
+            padding: 14px 32px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+        }
+
+        .cta-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Dashboard */
+        .dashboard {
+            padding: 24px 16px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .user-badge {
+            background: var(--gray-100);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-good { background: #d1fae5; color: #065f46; }
+        .status-warning { background: #fef3c7; color: #92400e; }
+        .status-danger { background: #fee2e2; color: #991b1b; }
+
+        /* Progress */
+        .progress-container {
+            margin: 16px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--secondary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Toggle & Controls */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 16px 0;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .toggle-label {
+            font-weight: 500;
+        }
+
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gray-300);
+            border-radius: 24px;
+            transition: .4s;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+        .toggle-input:checked + .toggle-slider {
+            background: var(--secondary);
+        }
+
+        .toggle-input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Demo Lock */
+        .demo-lock {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .lock-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .lock-content h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: var(--gray-900);
+        }
+
+        .lock-content p {
+            color: var(--gray-700);
+            margin-bottom: 24px;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-input {
+            padding: 12px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-button {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .close-lock {
+            margin-top: 16px;
+            background: transparent;
+            border: none;
+            color: var(--gray-500);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 32px 16px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: white;
+            margin-top: 32px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        .footer-link {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .copyright {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 640px) {
+            .hero h1 {
+                font-size: 28px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 16px;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Nozzle Selection */
+        .nozzle-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .nozzle-option {
+            padding: 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nozzle-option:hover {
+            border-color: var(--primary);
+        }
+
+        .nozzle-option.active {
+            border-color: var(--primary);
+            background: var(--gray-50);
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo Lock Overlay -->
+    <div class="demo-lock" id="demoLock">
+        <div class="lock-content">
+            <h3>🚀 Premium Features Locked</h3>
+            <p>This is a demonstration of RevoPredict's capabilities. The predictive maintenance engine is ready for deployment.</p>
+            <p><strong>Contact for Licensing:</strong></p>
+            <div class="contact-form">
+                <input type="email" class="form-input" placeholder="Your email" id="contactEmail">
+                <input type="text" class="form-input" placeholder="Company name" id="companyName">
+                <button class="form-button" onclick="submitContact()">Request Full Demo</button>
+            </div>
+            <button class="close-lock" onclick="closeLock()">Close Demo</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="nav container">
+            <a href="#" class="logo">RevoPredict</a>
+            <button class="auth-btn" onclick="showLock()">Demo Login</button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Predict. Automate. Never run out.</h1>
+            <p>Predictive maintenance for 3D printing consumables using decay algorithms to forecast wear and automate reordering.</p>
+            <button class="cta-button" onclick="showLock()">Request Manufacturer Demo</button>
+        </div>
+    </section>
+
+    <!-- Dashboard -->
+    <main class="dashboard container">
+        <div class="dashboard-header">
+            <h2>Nozzle Dashboard</h2>
+            <div class="user-badge">Demo User • E3D Revo System</div>
+        </div>
+
+        <!-- Nozzle Status Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Current Nozzle Status</h3>
+                <div class="status-badge status-warning" id="statusBadge">REPLACE SOON</div>
+            </div>
+            
+            <div class="nozzle-selector">
+                <div class="nozzle-option active" onclick="selectNozzle('brass_04')">
+                    <div>Brass 0.4mm</div>
+                    <small>Standard</small>
+                </div>
+                <div class="nozzle-option" onclick="selectNozzle('hardened_04')">
+                    <div>Hardened 0.4mm</div>
+                    <small>Premium</small>
+                </div>
+                <div class="nozzle-option" onclick="selectNozzle('brass_06')">
+                    <div>Brass 0.6mm</div>
+                    <small>High Flow</small>
+                </div>
+                <div class="nozzle-option" onclick="selectNozzle('nozzlex_04')">
+                    <div>Nozzle X 0.4mm</div>
+                    <small>Advanced</small>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>Wear Level</span>
+                    <span id="hoursRemaining">~47 hours remaining</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="wearProgress" style="width: 91%"></div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="currentHours">453</div>
+                    <div class="stat-label">Hours Used</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="predictedLife">500</div>
+                    <div class="stat-label">Predicted Life</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto-Order Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Automated Reordering</h3>
+                <div class="status-badge status-good" id="autoOrderStatus">ACTIVE</div>
+            </div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Enable Auto-Order</span>
+                <label class="toggle">
+                    <input type="checkbox" class="toggle-input" id="autoOrderToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div id="orderSettings">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span>Reorder Threshold</span>
+                        <span id="thresholdValue">48 hours remaining</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%; background: var(--primary);"></div>
+                    </div>
+                    <input type="range" min="5" max="100" value="40" class="form-input" id="thresholdSlider" 
+                           style="width: 100%; margin-top: 8px;"
+                           oninput="updateThreshold(this.value)">
+                </div>
+
+                <div style="margin-top: 16px; padding: 12px; background: #d1fae5; border-radius: 8px; color: #065f46;">
+                    <strong>✅ Order Scheduled</strong><br>
+                    <small>Your replacement nozzle will arrive before current nozzle fails.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Performance Analytics</h3>
+                <button class="auth-btn" style="font-size: 12px; padding: 6px 12px;" onclick="showPremium()">Premium Preview</button>
+            </div>
+            
+            <div style="height: 200px; background: var(--gray-100); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gray-500); margin-bottom: 16px;">
+                📈 Wear Curve Visualization<br>
+                <small>(Premium Feature)</small>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">£0.024</div>
+                    <div class="stat-label">Cost/Hour</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">92.7%</div>
+                    <div class="stat-label">Efficiency Score</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order History -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Recent Orders</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200);">
+                    <div>
+                        <strong>Hardened Steel 0.4mm</strong><br>
+                        <small style="color: var(--gray-500);">Yesterday • Auto-order</small>
+                    </div>
+                    <div style="text-align: right;">
+                        <div>£24.99</div>
+                        <small style="color: var(--secondary);">Shipped</small>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200);">
+                    <div>
+                        <strong>Brass 0.4mm (3-pack)</strong><br>
+                        <small style="color: var(--gray-500);">Nov 15, 2024 • Manual</small>
+                    </div>
+                    <div style="text-align: right;">
+                        <div>£29.97</div>
+                        <small style="color: var(--gray-500);">Delivered</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="#" class="footer-link" onclick="showLock()">Manufacturer Login</a>
+                <a href="#" class="footer-link" onclick="showLock()">API Documentation</a>
+                <a href="#" class="footer-link" onclick="showLock()">Contact Sales</a>
+            </div>
+            <div class="copyright">
+                RevoPredict © 2024 • Predictive Maintenance Platform • 8 Years of Forge Theory Validation
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Demo state
+        let demoState = {
+            currentNozzle: 'brass_04',
+            hoursUsed: 453,
+            predictedLife: 500,
+            autoOrderEnabled: true,
+            thresholdHours: 48,
+            premiumViewed: false
+        };
+
+        // Nozzle configurations
+        const nozzleConfigs = {
+            'brass_04': { baseLife: 500, wearRate: 1.0, name: 'Brass 0.4mm', price: '£9.99' },
+            'hardened_04': { baseLife: 1000, wearRate: 0.8, name: 'Hardened Steel 0.4mm', price: '£24.99' },
+            'brass_06': { baseLife: 450, wearRate: 1.1, name: 'Brass 0.6mm', price: '£10.99' },
+            'nozzlex_04': { baseLife: 800, wearRate: 0.9, name: 'Nozzle X 0.4mm', price: '£34.99' }
+        };
+
+        // Initialize
+        function init() {
+            updateNozzleDisplay();
+            startDemoTimer();
+        }
+
+        // Select nozzle type
+        function selectNozzle(nozzleId) {
+            // Update active state
+            document.querySelectorAll('.nozzle-option').forEach(el => el.classList.remove('active'));
+            event.target.closest('.nozzle-option').classList.add('active');
+            
+            // Update state
+            demoState.currentNozzle = nozzleId;
+            const config = nozzleConfigs[nozzleId];
+            demoState.predictedLife = config.baseLife;
+            
+            // Update display
+            updateNozzleDisplay();
+        }
+
+        // Update nozzle display
+        function updateNozzleDisplay() {
+            const config = nozzleConfigs[demoState.currentNozzle];
+            const hoursRemaining = Math.max(0, demoState.predictedLife - demoState.hoursUsed);
+            const wearPercentage = (demoState.hoursUsed / demoState.predictedLife) * 100;
+            
+            // Update UI
+            document.getElementById('currentHours').textContent = demoState.hoursUsed;
+            document.getElementById('predictedLife').textContent = demoState.predictedLife;
+            document.getElementById('hoursRemaining').textContent = `~${hoursRemaining} hours remaining`;
+            document.getElementById('wearProgress').style.width = `${Math.min(wearPercentage, 100)}%`;
+            
+            // Update status badge
+            const statusBadge = document.getElementById('statusBadge');
+            if (hoursRemaining > 100) {
+                statusBadge.className = 'status-badge status-good';
+                statusBadge.textContent = 'HEALTHY';
+            } else if (hoursRemaining > 24) {
+                statusBadge.className = 'status-badge status-warning';
+                statusBadge.textContent = 'REPLACE SOON';
+            } else {
+                statusBadge.className = 'status-badge status-danger';
+                statusBadge.textContent = 'REPLACE NOW';
+            }
+            
+            // Update auto-order status
+            const autoOrderStatus = document.getElementById('autoOrderStatus');
+            if (demoState.autoOrderEnabled && hoursRemaining <= demoState.thresholdHours) {
+                autoOrderStatus.textContent = 'ORDER PENDING';
+                autoOrderStatus.className = 'status-badge status-warning';
+            } else if (demoState.autoOrderEnabled) {
+                autoOrderStatus.textContent = 'ACTIVE';
+                autoOrderStatus.className = 'status-badge status-good';
+            } else {
+                autoOrderStatus.textContent = 'INACTIVE';
+                autoOrderStatus.className = 'status-badge';
+                autoOrderStatus.style.background = 'var(--gray-200)';
+                autoOrderStatus.style.color = 'var(--gray-700)';
+            }
+        }
+
+        // Update threshold
+        function updateThreshold(value) {
+            demoState.thresholdHours = Math.round((value / 100) * 200); // 0-200 hours scale
+            document.getElementById('thresholdValue').textContent = `${demoState.thresholdHours} hours remaining`;
+            updateNozzleDisplay();
+        }
+
+        // Toggle auto-order
+        document.getElementById('autoOrderToggle').addEventListener('change', function(e) {
+            demoState.autoOrderEnabled = e.target.checked;
+            document.getElementById('orderSettings').style.opacity = e.target.checked ? '1' : '0.5';
+            document.getElementById('orderSettings').style.pointerEvents = e.target.checked ? 'auto' : 'none';
+            updateNozzleDisplay();
+        });
+
+        // Show premium features
+        function showPremium() {
+            // Start timer for demo lock
+            if (!demoState.premiumViewed) {
+                demoState.premiumViewed = true;
+                setTimeout(() => {
+                    showLock();
+                }, 10000); // 10 seconds
+                
+                // Show temporary premium preview
+                alert('🚀 Premium Features Preview:\n\n• Real-time wear analytics\n• Material-specific decay algorithms\n• Multi-user team management\n• API integration\n• Custom reporting\n\nDemo will lock in 10 seconds...');
+            } else {
+                showLock();
+            }
+        }
+
+        // Show demo lock
+        function showLock() {
+            document.getElementById('demoLock').style.display = 'flex';
+        }
+
+        // Close demo lock
+        function closeLock() {
+            document.getElementById('demoLock').style.display = 'none';
+        }
+
+        // Submit contact form
+        function submitContact() {
+            const email = document.getElementById('contactEmail').value;
+            const company = document.getElementById('companyName').value;
+            
+            if (email && company) {
+                alert(`Thank you ${company}! Licensing information has been sent to ${email}.\n\nJames will contact you within 24 hours.`);
+                closeLock();
+                
+                // Clear form
+                document.getElementById('contactEmail').value = '';
+                document.getElementById('companyName').value = '';
+            } else {
+                alert('Please fill in both fields to request a demo.');
+            }
+        }
+
+        // Demo timer to simulate usage
+        function startDemoTimer() {
+            setInterval(() => {
+                // Simulate 0.1 hours of usage every 30 seconds
+                demoState.hoursUsed += 0.1;
+                updateNozzleDisplay();
+            }, 30000);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
